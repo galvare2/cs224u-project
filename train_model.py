@@ -15,9 +15,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score, f1_score
 import scipy.stats
+import features
 
 def main():
-    experiment()
+    experiment(phi=features.test_phi())
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True)
