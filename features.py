@@ -84,24 +84,40 @@ def add_discourse_markers_features(data_point, features):
 	#features["agree_intersect_len_last:", agreement_intersection_length(last_reply)] += 1.0
 
 
-def add_words_in_common_features(data_point, features):
+def words_in_common_helper(features, op, reply, name):
+    common_words = len(op.intersection(reply))
+    total_words = len(op.union(reply))
+    common_words_feat = common_words / 20
+    features["common_words:" + str(common_words_feat)] = 1
+    if len(reply) != 0:
+        reply_frac = float(common_words) / len(reply)
+    else:
+        reply_frac = 0
+    if len(op) != 0:
+        op_frac = float(common_words) / len(op)
+    else:
+        op_frac = 0
+    jaccard = float(common_words) / total_words
+    features["root reply frac " + name] = reply_frac
+    features["op frac " + name] = op_frac
+    features["Jaccard " + name] = jaccard
 
+def add_words_in_common_features(data_point, features):
     op_text = data_point["op_text"]
     root_reply = data_point["content"]["comments"][0]["body"]
     stop_words = set(get_stop_words("en"))
+
     op_text_words = set(op_text.split(" ")) #Unique words
     root_reply_words = set(root_reply.split(" "))
-    common_words = len(op_text_words.intersection(root_reply_words))
-    total_words = len(op_text_words.union(root_reply_words))
-    common_words_feat = common_words / 20
-    features["common_words:" + str(common_words_feat)] = 1
-    reply_frac = float(common_words) / len(root_reply_words)
-    op_frac = float(common_words) / len(op_text_words)
-    jaccard = float(common_words) / total_words
-    features["root reply frac"] = reply_frac
-    features["op frac"] = op_frac
-    features["Jaccard"] = jaccard
 
+    op_text_content_words = op_text_words.difference(stop_words)
+    root_reply_content_words = root_reply_words.difference(stop_words)
+
+    op_text_stop_words = op_text_words.intersection(stop_words)
+    root_reply_stop_words = root_reply_words.intersection(stop_words)
+    #words_in_common_helper(features, op_text_words, root_reply_words, "all")
+    #words_in_common_helper(features, op_text_stop_words, root_reply_stop_words, "stop words only")
+    words_in_common_helper(features, op_text_content_words, root_reply_content_words, "content words only")
 
 def test_phi(data_point):
     features = Counter()
