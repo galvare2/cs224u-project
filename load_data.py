@@ -1,4 +1,5 @@
 import json
+import sklearn
 from sklearn.feature_extraction import DictVectorizer
 
 TRAIN_OP_DATA = "cmv/pair_task/train_pair_data.jsonlist"
