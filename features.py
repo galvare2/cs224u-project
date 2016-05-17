@@ -35,15 +35,32 @@ agreement_markers = {
 
 
 # returns the size of the intersection of the disagreement markers keys and the comment
-def disagreement_measure(comment):
+def disagreement_intersection_length(comment):
 	com_list = comment.lower().split()
 	return len(set(com_list).intersection(disagreement_markers.keys()))
 
 
 # returns the size of the intersection of the agreement markers keys and the comment
-def agreement_measure(comment):
+def agreement_intersection_length(comment):
 	com_list = comment.lower().split()
 	return len(set(com_list).intersection(agreement_markers.keys()))
+
+
+def disagreement_intersection_sum(comment):
+	com_list = comment.lower().split()
+	dis_list = set(com_list).intersection(disagreement_markers.keys())
+	dis_sum = 0
+	for dis_mark in dis_list:
+		dis_sum += disagreement_markers[dis_mark]
+	return dis_sum
+
+def agreement_intersection_sum(comment):
+	com_list = comment.lower().split()
+	agr_list = set(com_list).intersection(agreement_markers.keys())
+	agr_sum = 0
+	for agr_mark in agr_list:
+		agr_sum += agreement_markers[agr_mark]
+	return agr_sum
 
 
 def add_discourse_markers_features(data_point, features):
@@ -51,8 +68,21 @@ def add_discourse_markers_features(data_point, features):
 	root_reply = data_point["content"]["comments"][0]["body"]
 	last_reply = data_point["content"]["comments"][-1]["body"]
 
-	features["disagree_factor:", disagreement_measure(root_reply)] += 1.0
-	features["agree_factor:", agreement_measure(last_reply)] += 1.0
+	#op
+	# features["disagree_intersect_len_op:", disagreement_intersection_length(op_text)] += 1.0
+	# features["agree_intersect_len_op:", agreement_intersection_length(op_text)] += 1.0
+	features["disagree_intersect_sum_op:", disagreement_intersection_sum(op_text)] += 1.0
+	features["agree_intersect_sum_op:", agreement_intersection_sum(op_text)] += 1.0
+
+
+	#root
+	#features["disagree_intersect_len_root:", disagreement_intersection_length(root_reply)] += 1.0
+	#features["agree_intersect_len_root:", agreement_intersection_length(root_reply)] += 1.0
+
+	#last comment
+	#features["disagree_intersect_len_last:", disagreement_intersection_length(last_reply)] += 1.0
+	#features["agree_intersect_len_last:", agreement_intersection_length(last_reply)] += 1.0
+
 
 def add_words_in_common_features(data_point, features):
 
