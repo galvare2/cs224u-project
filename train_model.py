@@ -1,13 +1,39 @@
 import load_data
+import numpy as np
+from sklearn.metrics import f1_score
+import os
+import codecs
+import random
+import unicodecsv
+from collections import Counter
+import numpy as np
+from scipy.sparse import csr_matrix
+from nltk.tree import Tree
+from sklearn.cross_validation import train_test_split
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import classification_report, accuracy_score, f1_score
+import scipy.stats
 
-def train_model():
-	data_train, data_dev = load_data.load_data()
-	dataset = build_dataset(data_train, phi)
+def main():
+    experiment()
+
+def fit_maxent_classifier(X, y):    
+    mod = LogisticRegression(fit_intercept=True)
+    mod.fit(X, y)
+    return mod
+
+def safe_macro_f1(y, y_pred):
+    """Macro-averaged F1, forcing `sklearn` to report as a multiclass
+    problem even when there are just two classes. `y` is the list of 
+    gold labels and `y_pred` is the list of predicted labels."""
+    return f1_score(y, y_pred, average='macro', pos_label=None)
 
 def experiment(
         phi,
         train_func=fit_maxent_classifier,
-        score_func=utils.safe_macro_f1,
+        score_func=safe_macro_f1,
         verbose=True):
     """Generic experimental framework for SST. Either assesses with a 
     random train/test split of `train_reader` or with `assess_reader` if 
@@ -54,25 +80,17 @@ def experiment(
         The overall scoring metric as determined by `score_metric`.
     
     """
-	data_train, data_dev = load_data.load_data()
+    data_train, data_dev = load_data.load_data()
     # Train dataset:
     train = load_data.build_dataset(data_train, phi) 
-    # Manage the assessment set-up:
+	# Manage the assessment set-up:
     X_train = train['X']
     y_train = train['y']
     X_assess = None 
     y_assess = None
-    if assess_reader == None:
-         X_train, X_assess, y_train, y_assess = train_test_split(
-                X_train, y_train, train_size=train_size)
-    else:
-        # Assessment dataset using the training vectorizer:
-        assess = build_dataset(
-            assess_reader, 
-            phi, 
-            class_func, 
-            vectorizer=train['vectorizer'])
-        X_assess, y_assess = assess['X'], assess['y']
+    # Assessment dataset using the training vectorizer:
+    assess = build_dataset(data_dev, phi, vectorizer=train['vectorizer'])
+    X_assess, y_assess = assess['X'], assess['y']
     # Train:      
     mod = train_func(X_train, y_train)    
     # Predictions:
@@ -86,4 +104,4 @@ def experiment(
 
 
 if __name__ == "__main__":
-	train_model()
+    main()
