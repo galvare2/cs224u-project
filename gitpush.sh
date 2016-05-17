@@ -5,6 +5,6 @@
 
 note=$1
 git add .
-commit -m note
+git commit -m note
 git push origin master
 
