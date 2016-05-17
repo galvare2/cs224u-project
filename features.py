@@ -20,6 +20,17 @@ from collections import Counter
 def test_phi(data_point):
     features = Counter()
     comments = data_point["content"]["comments"]
-    length = min(4, len(comments))
-    features['len:' + str(len(comments))] = length
+    #length = min(4, len(comments))
+    #features['len:' + str(length)] += 1.0
     return features
+
+
+def ups_downs_oracle_phi(data_point):
+    features = Counter()
+    comments = data_point["content"]["comments"]
+    total_num_ups = 0
+    total_num_downs = 0
+    for comment in comments:
+    	total_num_downs += comment["downs"]
+    	total_num_ups += comment["ups"]
+    	features[str(total_num_ups - total_num_downs)] += 1.0
