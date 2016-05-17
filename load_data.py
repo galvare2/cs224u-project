@@ -1,20 +1,33 @@
 import json
 from sklearn.feature_extraction import DictVectorizer
 
-TRAIN_OP_DATA = "cmv/op_task/train_op_data.jsonlist"
+TRAIN_OP_DATA = "cmv/pair_task/train_pair_data.jsonlist"
 DEV_CUTOFF_FRACTION = 0.8
 
+def reform_pair_data(data_object, value):
+    result = {}
+    result["op_author"] = data_object["op_author"]
+    result["op_text"] = data_object["op_text"]
+    result["op_name"] = data_object["op_name"]
+    result["op_title"] = data_object["op_title"]
+    result["content"] = data_object[value]
+    return result
+
+
 def load_data():
-	f = open(TRAIN_OP_DATA, "r")
-	data = []
-	for line in f:
-		data_object = json.loads(line)
-		data.append((data_object, data_object["delta_label"]))
-	num_examples = len(data)
-	cutoff = int(num_examples * DEV_CUTOFF_FRACTION)
-	data_train = data[:cutoff]
-	data_dev = data[cutoff:]
-	return data_train, data_dev
+    f = open(TRAIN_OP_DATA, "r")
+    data = []
+    for line in f:
+        data_object = json.loads(line)
+        data_pos = reform_pair_data(data_object, "positive")
+        data_neg = reform_pair_data(data_object, "negative")
+        data.append((data_pos, True))
+        data.append((data_neg, False))
+    num_examples = len(data)
+    cutoff = int(num_examples * DEV_CUTOFF_FRACTION)
+    data_train = data[:cutoff]
+    data_dev = data[cutoff:]
+    return data_train, data_dev
 
 def build_dataset(data, phi, vectorizer=None):
     """Core general function for building experimental datasets.
