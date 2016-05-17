@@ -1,7 +1,8 @@
 from collections import Counter
 
 def test_phi(data_point):
-    fuck = Counter()
-    fuck['fuck'] = 1.0
-    print fuck, "FUCK"
-    return fuck
+    features = Counter()
+    features['len'] = len(str(data_point["content"]))
+    print data_point["content"].keys()
+    print features
+    return features
