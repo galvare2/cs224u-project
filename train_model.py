@@ -18,7 +18,7 @@ import scipy.stats
 import features
 
 def main():
-    experiment(phi=features.test_phi())
+    experiment(phi=features.test_phi)
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True)
@@ -90,12 +90,13 @@ def experiment(
     X_assess = None 
     y_assess = None
     # Assessment dataset using the training vectorizer:
-    assess = build_dataset(data_dev, phi, vectorizer=train['vectorizer'])
+    assess = load_data.build_dataset(data_dev, phi, vectorizer=train['vectorizer'])
     X_assess, y_assess = assess['X'], assess['y']
     # Train:      
     mod = train_func(X_train, y_train)    
     # Predictions:
     predictions = mod.predict(X_assess)
+    print predictions
     # Report:
     if verbose:
         print('Accuracy: %0.03f' % accuracy_score(y_assess, predictions))

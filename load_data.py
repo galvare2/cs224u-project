@@ -1,4 +1,5 @@
 import json
+from sklearn.feature_extraction import DictVectorizer
 
 TRAIN_OP_DATA = "cmv/op_task/train_op_data.jsonlist"
 DEV_CUTOFF_FRACTION = 0.8
@@ -10,7 +11,7 @@ def load_data():
 		data_object = json.loads(line)
 		data.append((data_object, data_object["delta_label"]))
 	num_examples = len(data)
-	cutoff = num_examples * DEV_CUTOFF_FRACTION
+	cutoff = int(num_examples * DEV_CUTOFF_FRACTION)
 	data_train = data[:cutoff]
 	data_dev = data[cutoff:]
 	return data_train, data_dev
