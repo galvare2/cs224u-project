@@ -31,6 +31,20 @@ def safe_macro_f1(y, y_pred):
     gold labels and `y_pred` is the list of predicted labels."""
     return f1_score(y, y_pred, average='macro', pos_label=None)
 
+def print_feature_weights(vectorizer, mod):
+    weights = []
+    vectorizer.vocabulary_
+    coef = mod.coef_[0].tolist()
+    for vocab in vectorizer.vocabulary_.keys():
+        ind = vectorizer.vocabulary_[vocab]
+        weights.append((vocab, coef[ind]))
+    weights = sorted(weights, key=lambda x: x[1], reverse=True)
+    print "-"*50
+    print "Feature weights:"
+    for weight in weights:
+        print weight
+    print "-"*50
+
 def experiment(
         phi,
         train_func=fit_maxent_classifier,
@@ -87,16 +101,16 @@ def experiment(
 	# Manage the assessment set-up:
     X_train = train['X']
     y_train = train['y']
-    X_assess = None 
+    X_assess = None
     y_assess = None
     # Assessment dataset using the training vectorizer:
     assess = load_data.build_dataset(data_dev, phi, vectorizer=train['vectorizer'])
     X_assess, y_assess = assess['X'], assess['y']
     # Train:      
-    mod = train_func(X_train, y_train)    
+    mod = train_func(X_train, y_train) 
+    print_feature_weights(train['vectorizer'], mod)
     # Predictions:
     predictions = mod.predict(X_assess)
-    print predictions
     # Report:
     if verbose:
         print('Accuracy: %0.03f' % accuracy_score(y_assess, predictions))
