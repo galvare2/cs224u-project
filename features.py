@@ -1,3 +1,4 @@
+from stop_words import get_stop_words
 from collections import Counter
 
 """
@@ -15,13 +16,15 @@ from collections import Counter
     data_point["content"]["comments"][i]["body"] - contains the actual text of the ith comment
 """
 
-def add_discourse_markers_features(data_point, features)):
-	hi = "hi"
+def add_discourse_markers_features(data_point, features):
+    hi = "hi"
 
 
 def add_words_in_common_features(data_point, features):
+
     op_text = data_point["op_text"]
     root_reply = data_point["content"]["comments"][0]["body"]
+    stop_words = set(get_stop_words("en"))
     op_text_words = set(op_text.split(" ")) #Unique words
     root_reply_words = set(root_reply.split(" "))
     common_words = len(op_text_words.intersection(root_reply_words))
@@ -42,7 +45,7 @@ def test_phi(data_point):
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
     add_words_in_common_features(data_point, features)
-    add_discourse_markers_features(data_point, features))
+    add_discourse_markers_features(data_point, features)
     return features
 
 
