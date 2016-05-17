@@ -20,8 +20,16 @@ def add_words_in_common_features(data_point, features):
     root_reply = data_point["content"]["comments"][0]["body"]
     op_text_words = set(op_text.split(" ")) #Unique words
     root_reply_words = set(root_reply.split(" "))
-    common_words = len(op_text_words.intersection(root_reply_words)) / 20
-    features["common_words:" + str(common_words)] = 1
+    common_words = len(op_text_words.intersection(root_reply_words))
+    total_words = len(op_text_words.union(root_reply_words))
+    common_words_feat = common_words / 20
+    features["common_words:" + str(common_words_feat)] = 1
+    reply_frac = float(common_words) / len(root_reply_words)
+    op_frac = float(common_words) / len(op_text_words)
+    jaccard = float(common_words) / total_words
+    features["root reply frac"] = reply_frac
+    features["op frac"] = op_frac
+    features["Jaccard"] = jaccard
 
 
 def test_phi(data_point):
