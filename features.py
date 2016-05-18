@@ -1,5 +1,6 @@
 from stop_words import get_stop_words
 from collections import Counter
+import re
 
 """
     data_point - dict that has metadata and key "content" as well as "op_text"
@@ -117,7 +118,7 @@ def words_in_common_helper(features, op, reply, name):
     common_words = len(op.intersection(reply))
     total_words = len(op.union(reply))
     common_words_feat = common_words / 20
-    features["common_words:" + str(common_words_feat)] = 1
+    features["common_words:" + str(common_words_feat) + " " + name] = 1
     if len(reply) != 0:
         reply_frac = float(common_words) / len(reply)
     else:
@@ -148,6 +149,51 @@ def add_words_in_common_features(data_point, features):
     #words_in_common_helper(features, op_text_stop_words, root_reply_stop_words, "stop words only")
     #words_in_common_helper(features, op_text_content_words, root_reply_content_words, "content words only")
 
+DEFINITE_ARTICLES = ["the"]
+INDEFINITE_ARTICLES = ["a", "an"]
+
+def add_misc_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"]
+    num_sentences = root_reply.count(". ") + root_reply.count(".\n")
+    features["num sentences:"] = num_sentences
+    num_paragraphs = root_reply.count("\n\n")
+    features["num paragraphs:"] = num_paragraphs
+    num_question_marks = root_reply.count("?")
+    features["num question marks:"] = num_question_marks
+
+
+def add_article_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"].split(" ")
+    num_def, num_indef = (0, 0)
+    for word in root_reply:
+        if word in DEFINITE_ARTICLES:
+            num_def += 1
+        if word in INDEFINITE_ARTICLES:
+            num_indef += 1
+    features["Definite Articles"] = num_def
+    features["Indefinite Articles"] = num_indef
+
+def add_link_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"]
+    num_com_links = root_reply.count(".com")
+    num_links = root_reply.count("http")
+    frac_links = float(num_links) / len(root_reply.split(" "))
+    frac_com_links = float(num_com_links) / len(root_reply.split(" "))
+    features[".com links"] = num_com_links
+    features["total links"] = num_links
+    features["fraction links"] = frac_links
+    features["fraction .com links"] = frac_links
+
+def add_markdown_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"]
+    num_italics = len(re.findall("[^\*]\*[^\*]", root_reply))
+    #features["num italics"] = num_italics
+    num_bold = len(re.findall("[^\*]\*\*[^\*]", root_reply))
+    #features["num bold"] = num_bold
+
+
+
+
 def test_phi(data_point):
     features = Counter()
     comments = data_point["content"]["comments"]
@@ -155,6 +201,7 @@ def test_phi(data_point):
     root_reply_text = comments[0]["body"]
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
+    features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
     add_words_in_common_features(data_point, features)
     add_discourse_markers_features(data_point, features)
 
@@ -162,6 +209,10 @@ def test_phi(data_point):
     # personal_pronouns_helper(comment=root_reply_text, features, pronouns_list=SECOND_PERSON_PRONOUNS, "2nd_person_num")
     personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
     # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
+    #add_article_features(data_point, features)
+    add_link_features(data_point, features)
+    add_misc_features(data_point, features)
+    add_markdown_features(data_point, features)
     return features
 
 
