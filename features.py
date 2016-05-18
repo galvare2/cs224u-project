@@ -1,5 +1,6 @@
 from stop_words import get_stop_words
 from collections import Counter
+import re
 
 """
     data_point - dict that has metadata and key "content" as well as "op_text"
@@ -163,8 +164,11 @@ def add_link_features(data_point, features):
 
 def add_markdown_features(data_point, features):
     root_reply = data_point["content"]["comments"][0]["body"]
-    num_italics = len(re.findall("[^*]*[^*]", root_reply))
-    print num_italics
+    num_italics = len(re.findall("[^\*]\*[^\*]", root_reply))
+    #features["num italics"] = num_italics
+    num_bold = len(re.findall("[^\*]\*\*[^\*]", root_reply))
+    #features["num bold"] = num_bold
+
 
 
 
@@ -179,6 +183,7 @@ def test_phi(data_point):
     #add_article_features(data_point, features)
     add_link_features(data_point, features)
     add_misc_features(data_point, features)
+    add_markdown_features(data_point, features)
     return features
 
 
