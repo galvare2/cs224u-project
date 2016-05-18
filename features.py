@@ -161,6 +161,12 @@ def add_link_features(data_point, features):
     features["fraction links"] = frac_links
     features["fraction .com links"] = frac_links
 
+def add_markdown_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"]
+    num_italics = len(re.findall("[^*]*[^*]", root_reply))
+    print num_italics
+
+
 
 def test_phi(data_point):
     features = Counter()
