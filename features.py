@@ -1,5 +1,6 @@
 from stop_words import get_stop_words
 from collections import Counter
+from posNegLoader import loadPosNegList
 import re
 
 """
@@ -16,6 +17,36 @@ import re
 
     data_point["content"]["comments"][i]["body"] - contains the actual text of the ith comment
 """
+
+
+POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
+
+
+
+
+def positive_words_intersection_features(comment, features):
+	comment = comment.upper().split()
+	posWords = [word for word in comment if word in POSLIST]
+	posCount = len(posWords)
+
+	# featurize the posword count as the value
+	features["pos_words"] += posCount
+
+	# featurize the pronoun count as part of the key
+	# features["pos_words:", str(posCount)] += 1.0
+
+
+def negative_words_intersection_features(comment, features):
+	comment = comment.upper().split()
+	negWords = [word for word in comment if word in NEGLIST]
+	negCount = len(negWords)
+
+	# featurize the posword count as the value
+	features["neg_words"] += negCount
+
+	# featurize the pronoun count as part of the key
+	# features["neg_words:", str(negCount)] += 1.0
+
 
 
 # dictionary of discourse markers indicative of disagreement
@@ -203,12 +234,20 @@ def test_phi(data_point):
     features['len:' + str(length)] += 1.0
     features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
     add_words_in_common_features(data_point, features)
+
+    # discourse markers
     add_discourse_markers_features(data_point, features)
 
-    # personal pronouns helpers
+    # personal pronouns
     # personal_pronouns_helper(comment=root_reply_text, features, pronouns_list=SECOND_PERSON_PRONOUNS, "2nd_person_num")
     personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
     # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
+
+    # positive/negative words
+    positive_words_intersection_features(op_text, features)
+    # negative_words_intersection_features(op_text, features)
+
+
     #add_article_features(data_point, features)
     add_link_features(data_point, features)
     add_misc_features(data_point, features)

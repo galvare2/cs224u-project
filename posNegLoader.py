@@ -32,5 +32,3 @@ def loadPosNegList(filename="train.csv"):
 				negList.append(entry)
 
 	return (posList, negList)
-
-posNeg = loadPosNegList("posnegdata.csv")
