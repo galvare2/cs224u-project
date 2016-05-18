@@ -95,7 +95,7 @@ def words_in_common_helper(features, op, reply, name):
     common_words = len(op.intersection(reply))
     total_words = len(op.union(reply))
     common_words_feat = common_words / 20
-    features["common_words:" + str(common_words_feat)] = 1
+    features["common_words:" + str(common_words_feat) + " " + name] = 1
     if len(reply) != 0:
         reply_frac = float(common_words) / len(reply)
     else:
@@ -130,13 +130,13 @@ DEFINITE_ARTICLES = ["the"]
 INDEFINITE_ARTICLES = ["a", "an"]
 
 def add_misc_features(data_point, features):
-    root_reply = data_point["content"]["comments"][0]["body"].split(" ")
-    num_paragraphs = root_reply.count("\n\n")
-    features["num paragraphs:" + str(num_paragraphs)] = 1
-    num_question_marks = root_reply.count("?")
-    features["num question marks:" + str(num_question_marks)] = 1
+    root_reply = data_point["content"]["comments"][0]["body"]
     num_sentences = root_reply.count(". ") + root_reply.count(".\n")
-    features["num sentences:" + str(num_sentences)] = 1
+    features["num sentences:"] = num_sentences
+    num_paragraphs = root_reply.count("\n\n")
+    features["num paragraphs:"] = num_paragraphs
+    num_question_marks = root_reply.count("?")
+    features["num question marks:"] = num_question_marks
 
 
 def add_article_features(data_point, features):
@@ -167,6 +167,7 @@ def test_phi(data_point):
     comments = data_point["content"]["comments"]
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
+    features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
     add_words_in_common_features(data_point, features)
     add_discourse_markers_features(data_point, features)
     #add_article_features(data_point, features)
