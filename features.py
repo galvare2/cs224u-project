@@ -91,6 +91,28 @@ def add_discourse_markers_features(data_point, features):
 	# features["agree_intersect_sum_op:", agreement_intersection_sum(last_reply)] += 1.0
 
 
+
+SECOND_PERSON_PRONOUNS = ["you", "yours", "you'll", "y'all", "yall", "you're"]
+FIRST_PERSON_PRONOUNS_SNG = ["i", "im", "i'll", "me", "my", "mine"]
+FIRST_PERSON_PRONOUNS_PLR = ["we", "we'll", "ours", "our", "us"]
+
+
+def personal_pronouns_helper(comment, features, pronouns_list, feature_key_name):
+	comment = comment.lower().split()
+	prons = [word for word in comment if word in pronouns_list]
+	prons_count = len(prons)
+
+	# featurize the pronoun count into the value
+	features[feature_key_name] += prons_count
+
+	# featurize the pronoun count as part of the key
+	# features["1st_person_sg_num", str(first_person_count)] += 1.0
+
+	# featurize the pronoun set (i.e. which pronouns appear at least once)
+	# features["1st_person_sg_num" + str(list(set(first_person_prons)))] += 1.0
+
+
+
 def words_in_common_helper(features, op, reply, name):
     common_words = len(op.intersection(reply))
     total_words = len(op.union(reply))
@@ -129,10 +151,17 @@ def add_words_in_common_features(data_point, features):
 def test_phi(data_point):
     features = Counter()
     comments = data_point["content"]["comments"]
+    op_text = data_point["op_text"]
+    root_reply_text = comments[0]["body"]
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
     add_words_in_common_features(data_point, features)
     add_discourse_markers_features(data_point, features)
+
+    # personal pronouns helpers
+    # personal_pronouns_helper(comment=root_reply_text, features, pronouns_list=SECOND_PERSON_PRONOUNS, "2nd_person_num")
+    personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
+    # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
     return features
 
 
