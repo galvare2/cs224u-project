@@ -145,8 +145,8 @@ def add_link_features(data_point, features):
     num_com_links = root_reply.count(".com")
     num_links = root_reply.count("http")
     frac_links = float(num_links) / len(root_reply.split(" "))
-    features[".com links"] = num_com_links
-    features["total links"] = num_links
+    features[".com links:" + str(num_com_links)] = 1
+    features["total links:" + str(num_links)] = 1
     features["fraction links"] = frac_links
 
 
