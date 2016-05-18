@@ -135,6 +135,8 @@ def add_misc_features(data_point, features):
     features["num paragraphs:" + str(num_paragraphs)] = 1
     num_question_marks = root_reply.count("?")
     features["num question marks:" + str(num_question_marks)] = 1
+    num_sentences = root_reply.count(". ") + root_reply.count(".\n")
+    features["num sentences:" + str(num_sentences)] = 1
 
 
 def add_article_features(data_point, features):
