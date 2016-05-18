@@ -16,6 +16,8 @@ from collections import Counter
     data_point["content"]["comments"][i]["body"] - contains the actual text of the ith comment
 """
 
+
+# dictionary of discourse markers indicative of disagreement
 disagreement_markers = {
 	"really": 67,
 	"no": 66,
@@ -25,6 +27,7 @@ disagreement_markers = {
 	"you mean": 57
 }
 
+# dictionary of discourse markers indicative of agreement
 agreement_markers = {
 	"yes": 73,
 	"i know": 64,
@@ -70,18 +73,22 @@ def add_discourse_markers_features(data_point, features):
 
 	#op
 	# features["disagree_intersect_len_op:", disagreement_intersection_length(op_text)] += 1.0
-	# features["agree_intersect_len_op:", agreement_intersection_length(op_text)] += 1.0
-	features["disagree_intersect_sum_op:", disagreement_intersection_sum(op_text)] += 1.0
-	features["agree_intersect_sum_op:", agreement_intersection_sum(op_text)] += 1.0
+	features["agree_intersect_len_op:", agreement_intersection_length(op_text)] += 1.0
+	# features["disagree_intersect_sum_op:", disagreement_intersection_sum(op_text)] += 1.0
+	# features["agree_intersect_sum_op:", agreement_intersection_sum(op_text)] += 1.0
 
 
 	#root
 	#features["disagree_intersect_len_root:", disagreement_intersection_length(root_reply)] += 1.0
 	#features["agree_intersect_len_root:", agreement_intersection_length(root_reply)] += 1.0
+	# features["disagree_intersect_sum_op:", disagreement_intersection_sum(root_reply)] += 1.0
+	# features["agree_intersect_sum_op:", agreement_intersection_sum(root_reply)] += 1.0
 
 	#last comment
 	#features["disagree_intersect_len_last:", disagreement_intersection_length(last_reply)] += 1.0
 	#features["agree_intersect_len_last:", agreement_intersection_length(last_reply)] += 1.0
+	# features["disagree_intersect_sum_op:", disagreement_intersection_sum(last_reply)] += 1.0
+	# features["agree_intersect_sum_op:", agreement_intersection_sum(last_reply)] += 1.0
 
 
 def words_in_common_helper(features, op, reply, name):
@@ -119,11 +126,19 @@ def add_words_in_common_features(data_point, features):
     #words_in_common_helper(features, op_text_stop_words, root_reply_stop_words, "stop words only")
     #words_in_common_helper(features, op_text_content_words, root_reply_content_words, "content words only")
 
+DEFINITE_ARTICLES = ["the"]
+INDEFINITE_ARTICLES = ["a", "an"]
+
 def add_article_features(data_point, features):
     root_reply = data_point["content"]["comments"][0]["body"].split(" ")
+    num_def, num_indef = (0, 0)
     for word in root_reply:
         if word in DEFINITE_ARTICLES:
             num_def += 1
+        if word in INDEFINITE_ARTICLES:
+            num_indef += 1
+    features["Definite Articles"] = num_def
+    features["Indefinite Articles"] = num_indef
 
 
 def test_phi(data_point):
@@ -133,6 +148,7 @@ def test_phi(data_point):
     features['len:' + str(length)] += 1.0
     add_words_in_common_features(data_point, features)
     add_discourse_markers_features(data_point, features)
+    add_article_features(data_point, features)
     return features
 
 
