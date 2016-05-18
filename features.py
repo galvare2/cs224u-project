@@ -115,9 +115,16 @@ def add_words_in_common_features(data_point, features):
 
     op_text_stop_words = op_text_words.intersection(stop_words)
     root_reply_stop_words = root_reply_words.intersection(stop_words)
-    #words_in_common_helper(features, op_text_words, root_reply_words, "all")
+    words_in_common_helper(features, op_text_words, root_reply_words, "all")
     #words_in_common_helper(features, op_text_stop_words, root_reply_stop_words, "stop words only")
-    words_in_common_helper(features, op_text_content_words, root_reply_content_words, "content words only")
+    #words_in_common_helper(features, op_text_content_words, root_reply_content_words, "content words only")
+
+def add_article_features(data_point, features):
+    root_reply = data_point["content"]["comments"][0]["body"].split(" ")
+    for word in root_reply:
+        if word in DEFINITE_ARTICLES:
+            num_def += 1
+
 
 def test_phi(data_point):
     features = Counter()
