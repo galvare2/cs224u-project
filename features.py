@@ -244,8 +244,8 @@ def test_phi(data_point):
     # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
 
     # positive/negative words
-    positive_words_intersection_features(op_text, features)
-    # negative_words_intersection_features(op_text, features)
+    # positive_words_intersection_features(root_reply_text, features)
+    # negative_words_intersection_features(root_reply_text, features)
 
 
     #add_article_features(data_point, features)
