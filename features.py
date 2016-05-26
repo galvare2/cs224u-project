@@ -233,6 +233,8 @@ def test_phi(data_point):
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
     features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
+    
+    # interplay
     add_words_in_common_features(data_point, features)
 
     # discourse markers
@@ -247,7 +249,7 @@ def test_phi(data_point):
     # positive_words_intersection_features(root_reply_text, features)
     # negative_words_intersection_features(root_reply_text, features)
 
-
+    # formatting
     #add_article_features(data_point, features)
     add_link_features(data_point, features)
     add_misc_features(data_point, features)
