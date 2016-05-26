@@ -250,7 +250,7 @@ def test_phi(data_point):
     # negative_words_intersection_features(root_reply_text, features)
 
     # formatting
-    #add_article_features(data_point, features)
+    add_article_features(data_point, features)
     add_link_features(data_point, features)
     add_misc_features(data_point, features)
     add_markdown_features(data_point, features)
