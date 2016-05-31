@@ -21,7 +21,7 @@ def main():
     experiment(phi=features.test_phi)
 
 def fit_maxent_classifier(X, y):    
-    mod = LogisticRegression(fit_intercept=True)
+    mod = LogisticRegression(fit_intercept=True, max_iter=200)
     mod.fit(X, y)
     return mod
 
