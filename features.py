@@ -109,7 +109,6 @@ def add_discourse_markers_features(data_point, features):
 	# features["disagree_intersect_sum_op:", disagreement_intersection_sum(op_text)] += 1.0
 	# features["agree_intersect_sum_op:", agreement_intersection_sum(op_text)] += 1.0
 
-
 	#root
 	#features["disagree_intersect_len_root:", disagreement_intersection_length(root_reply)] += 1.0
 	#features["agree_intersect_len_root:", agreement_intersection_length(root_reply)] += 1.0
@@ -233,21 +232,22 @@ def test_phi(data_point):
     length = min(4, len(comments))
     features['len:' + str(length)] += 1.0
     features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
+    
+    # interplay
     add_words_in_common_features(data_point, features)
 
     # discourse markers
     add_discourse_markers_features(data_point, features)
 
     # personal pronouns
-    #personal_pronouns_helper(root_reply_text, features, SECOND_PERSON_PRONOUNS, "2nd_person_num")
-    #personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
-    #personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
+    # personal_pronouns_helper(comment=root_reply_text, features, pronouns_list=SECOND_PERSON_PRONOUNS, "2nd_person_root")
+    personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
+    # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
 
     # positive/negative words
     # positive_words_intersection_features(root_reply_text, features)
     # negative_words_intersection_features(root_reply_text, features)
-
-
+    # formatting
     add_article_features(data_point, features)
     add_link_features(data_point, features)
     add_misc_features(data_point, features)

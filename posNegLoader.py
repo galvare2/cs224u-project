@@ -10,6 +10,8 @@ where entry is the word, positiv has the value "Positiv" if the word
 has a positive sentiment,"Negativ" if the word has a negative sentiment,
 and NULL otherwise.
 
+file downloaded from http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm
+
 '''
 
 
