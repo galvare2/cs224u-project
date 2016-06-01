@@ -2,21 +2,50 @@ import json
 from sklearn.feature_extraction import DictVectorizer
 from spacy.en import English
 
-TRAIN_OP_DATA = "cmv/pair_task/train_pair_data.jsonlist"
+TRAIN_PAIR_DATA = "cmv/pair_task/train_pair_data.jsonlist"
+TRAIN_OP_DATA = "cmv/op_task/train_op_data.jsonlist"
 DEV_CUTOFF_FRACTION = 0.8
+
+
+'''
+helper functions for sanitizing data
+
+'''
+
+def shave_footnote(body):
+    footnote_begin = "\n_____\n\n&gt;"
+    footnote_end = "*Happy CMVing!*"
+    footnote_begin_ind = body.find(footnote_begin)
+    if footnote_begin_ind > -1:
+        return body[:footnote_begin_ind]
+    return body
+
+
+def shave_CMV(title):
+    cmv_ind = title.find("CMV: ")
+    if cmv_ind == 0:
+        return title[5:]
+    return title
+
+
+
+'''
+pair task
+
+'''
 
 def reform_pair_data(data_object, value):
     result = {}
     result["op_author"] = data_object["op_author"]
-    result["op_text"] = data_object["op_text"]
+    result["op_text"] = shave_footnote(data_object["op_text"])
     result["op_name"] = data_object["op_name"]
-    result["op_title"] = data_object["op_title"]
+    result["op_title"] = shave_CMV(data_object["op_title"])
     result["content"] = data_object[value]
     return result
 
 
-def load_data():
-    f = open(TRAIN_OP_DATA, "r")
+def load_pair_data():
+    f = open(TRAIN_PAIR_DATA, "r")
     data = []
     for line in f:
         data_object = json.loads(line)
@@ -29,6 +58,45 @@ def load_data():
     data_train = data[:cutoff]
     data_dev = data[cutoff:]
     return data_train, data_dev
+
+
+'''
+op task
+
+'''
+
+
+def load_op_data():
+    f = open(TRAIN_OP_DATA, "r")
+    data = []
+    for line in f:
+        data_object = json.loads(line)
+        title = data_object["title"]
+        body = data_object["selftext"]
+
+        # shave the footnotes off the body text
+        body = shave_footnote(body)
+
+        # shave the "CMV: " off the title
+        title = shave_CMV(title)
+        
+        # the title is basically the first sentence of the body
+        if title[-1] != '.':
+            title = title + '.'
+        body = title + ' ' + body
+
+        data.append((body, data_object["delta_label"]))
+    num_examples = len(data)
+    cutoff = int(num_examples * DEV_CUTOFF_FRACTION)
+    data_train = data[:cutoff]
+    data_dev = data[cutoff:]
+    return data_train, data_dev
+
+
+'''
+build dataset
+'''
+
 
 def build_dataset(data, phi, vectorizer=None):
     """Core general function for building experimental datasets.
