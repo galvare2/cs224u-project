@@ -24,11 +24,7 @@ DATA_LOADER = load_data.load_pair_data
 
 
 def main():
-<<<<<<< HEAD
     experiment(phi=PHI)
-=======
-    experiment(phi=op_test_phi, task="op")
->>>>>>> origin/master
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True, max_iter=200)
@@ -105,14 +101,8 @@ def experiment(
         The overall scoring metric as determined by `score_metric`.
     
     """
-<<<<<<< HEAD
-    data_train, data_dev = DATA_LOADER()
-=======
-    data_train, data_dev = load_data.load_pair_data()
-    elif task == "op":
-        data_train, data_dev = load_data.load_op_data()
 
->>>>>>> origin/master
+    data_train, data_dev = DATA_LOADER()
 
     # Train dataset:
     train = load_data.build_dataset(data_train, phi) 
