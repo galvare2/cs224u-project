@@ -272,9 +272,9 @@ def add_parse_features(data_point, features, nlp):
     doc_rr = nlp(root_reply)
     doc_op = nlp(op_text)
     #add_pos_count_parse_features(features, doc_rr)
-    #add_pos_similarity_parse_features(features, doc_rr, doc_op)
+    add_pos_similarity_parse_features(features, doc_rr, doc_op)
     #Won't work unless you re-enable the entity tagger in load_data
-    add_entity_parse_features(features, doc_rr)
+    #add_entity_parse_features(features, doc_rr)
 
 
 

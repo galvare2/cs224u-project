@@ -18,8 +18,13 @@ import scipy.stats
 from features import pair_test_phi
 from op_features import op_test_phi
 
+PHI = pair_test_phi
+DATA_LOADER = load_data.load_pair_data
+
+
+
 def main():
-    experiment(phi=op_test_phi)
+    experiment(phi=PHI)
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True, max_iter=200)
@@ -50,7 +55,6 @@ def experiment(
         phi,
         train_func=fit_maxent_classifier,
         score_func=safe_macro_f1,
-        task="pair",
         verbose=True):
     """Generic experimental framework for SST. Either assesses with a 
     random train/test split of `train_reader` or with `assess_reader` if 
@@ -97,10 +101,7 @@ def experiment(
         The overall scoring metric as determined by `score_metric`.
     
     """
-    data_train, data_dev = load_data.load_pair_data()
-    if task == "op":
-        data_train, data_dev = load_data.load_op_data()
-
+    data_train, data_dev = DATA_LOADER()
 
     # Train dataset:
     train = load_data.build_dataset(data_train, phi) 
