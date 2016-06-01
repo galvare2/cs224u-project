@@ -313,9 +313,6 @@ def pair_test_phi(data_point, nlp):
     return features
 
 
-def op_test_phi(data_point, nlp):
-
-
 def ups_downs_oracle_phi(data_point):
     features = Counter()
     comments = data_point["content"]["comments"]
