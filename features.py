@@ -278,7 +278,7 @@ def add_parse_features(data_point, features, nlp):
 
 
 
-def test_phi(data_point, nlp):
+def pair_test_phi(data_point, nlp):
     features = Counter()
     comments = data_point["content"]["comments"]
     op_text = data_point["op_text"]

@@ -18,7 +18,7 @@ import scipy.stats
 import features
 
 def main():
-    experiment(phi=features.test_phi)
+    experiment(phi=features.pair_test_phi)
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True, max_iter=200)
