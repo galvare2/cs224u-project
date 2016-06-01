@@ -18,7 +18,45 @@ def add_pronoun_features(data_point, features):
 
 
 
+POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
+
+def positive_words_intersection_features(comment, features):
+	comment = comment.upper().split()
+	posWords = [word for word in comment if word in POSLIST]
+	posCount = len(posWords)
+
+	# featurize the posword count as the value
+	features["pos_words"] += posCount
+
+	# featurize the pronoun count as part of the key
+	# features["pos_words:", str(posCount)] += 1.0
+
+
+def negative_words_intersection_features(comment, features):
+	comment = comment.upper().split()
+	negWords = [word for word in comment if word in NEGLIST]
+	negCount = len(negWords)
+
+	# featurize the posword count as the value
+	features["neg_words"] += negCount
+
+	# featurize the pronoun count as part of the key
+	# features["neg_words:", str(negCount)] += 1.0
+
+
+
 def op_test_phi(data_point, nlp):
     features = Counter()
     add_pronoun_features(data_point, features)
+    positive_words_intersection_features(comment, features)
+    negative_words_intersection_features(comment, features)
     return features
+
+
+
+
+
+
+
+
+
