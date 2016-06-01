@@ -24,7 +24,7 @@ DATA_LOADER = load_data.load_pair_data
 
 
 def main():
-    experiment(phi=PHI)
+    experiment()
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True, max_iter=200)
@@ -52,7 +52,7 @@ def print_feature_weights(vectorizer, mod):
     print "-"*50
 
 def experiment(
-        phi,
+        phi=PHI,
         train_func=fit_maxent_classifier,
         score_func=safe_macro_f1,
         verbose=True):
