@@ -63,7 +63,7 @@ def build_dataset(data, phi, vectorizer=None):
     labels = []
     feat_dicts = []
     raw_examples = []
-    nlp = English(parser=False, entity=False, matcher=False)
+    nlp = English(parser=False)
     for obj, label in data:
         labels.append(label)
         feat_dicts.append(phi(obj, nlp))
