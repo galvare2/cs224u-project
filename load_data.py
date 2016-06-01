@@ -1,5 +1,6 @@
 import json
 from sklearn.feature_extraction import DictVectorizer
+from spacy.en import English
 
 TRAIN_PAIR_DATA = "cmv/pair_task/train_pair_data.jsonlist"
 TRAIN_OP_DATA = "cmv/op_task/train_op_data.jsonlist"
@@ -126,12 +127,14 @@ def build_dataset(data, phi, vectorizer=None):
         'raw_examples' (the `nltk.Tree` objects, for error analysis).
     
     """  
+    print "Build Data: Begin"
     labels = []
     feat_dicts = []
     raw_examples = []
+    nlp = English(parser=False, entity=False, matcher=False)
     for obj, label in data:
         labels.append(label)
-        feat_dicts.append(phi(obj))
+        feat_dicts.append(phi(obj, nlp))
         raw_examples.append(obj)
     feat_matrix = None
     # In training, we want a new vectorizer:    
@@ -141,6 +144,7 @@ def build_dataset(data, phi, vectorizer=None):
     # In assessment, we featurize using the existing vectorizer:
     else:
         feat_matrix = vectorizer.transform(feat_dicts)
+    print "Build data: End"
     return {'X': feat_matrix, 
             'y': labels, 
             'vectorizer': vectorizer, 

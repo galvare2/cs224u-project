@@ -2,6 +2,7 @@ from stop_words import get_stop_words
 from collections import Counter
 from posNegLoader import loadPosNegList
 import re
+import spacy
 
 """
     data_point - dict that has metadata and key "content" as well as "op_text"
@@ -19,7 +20,7 @@ import re
 """
 
 
-POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
+#POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
 
 
 
@@ -217,42 +218,98 @@ def add_link_features(data_point, features):
 def add_markdown_features(data_point, features):
     root_reply = data_point["content"]["comments"][0]["body"]
     num_italics = len(re.findall("[^\*]\*[^\*]", root_reply))
-    #features["num italics"] = num_italics
+    features["num italics"] = num_italics
     num_bold = len(re.findall("[^\*]\*\*[^\*]", root_reply))
-    #features["num bold"] = num_bold
+    features["num bold"] = num_bold
+
+
+from spacy.parts_of_speech import NOUN, ADJ, PRON, ADV, INTJ, CONJ
+
+def add_pos_count_parse_features(features, doc):
+    num_nouns = len([word for word in doc if word.pos == spacy.parts_of_speech.NOUN])
+    num_adj = len([word for word in doc if word.pos == spacy.parts_of_speech.ADJ])
+    num_pron = len([word for word in doc if word.pos == spacy.parts_of_speech.PRON])
+    num_adv = len([word for word in doc if word.pos == spacy.parts_of_speech.ADV])
+    num_intj = len([word for word in doc if word.pos == spacy.parts_of_speech.INTJ])
+    num_conj = len([word for word in doc if word.pos == spacy.parts_of_speech.CONJ])
+    num_words = len(doc)
+    features["Nouns Count"] = float(num_nouns)
+    features["Adjectives Count"] = float(num_adj)
+    features["Pronouns Count"] = float(num_pron)
+    features["Adverbs Count"] = float(num_adv)
+    features["Interjections Count"] = float(num_intj)
+    features["Conjunctions Count"] = float(num_conj)
+
+def add_pos_similarity_parse_features(features, doc_rr, doc_op): 
+    num_nouns_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.NOUN])
+    num_adj_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.ADJ])
+    num_pron_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.PRON])
+    num_adv_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.ADV])
+    num_intj_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.INTJ])
+    num_conj_rr = len([word for word in doc_rr if word.pos == spacy.parts_of_speech.CONJ])
+    num_words_rr = len(doc_rr)
+    num_nouns_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.NOUN])
+    num_adj_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.ADJ])
+    num_pron_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.PRON])
+    num_adv_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.ADV])
+    num_intj_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.INTJ])
+    num_conj_op = len([word for word in doc_op if word.pos == spacy.parts_of_speech.CONJ])
+    num_words_op = len(doc_op)
+    features["Nouns Difference"] = float(num_nouns_rr) - num_nouns_op
+    features["Adjectives Difference"] = float(num_adj_rr) - num_adj_op 
+    features["Pronouns Difference"] = float(num_pron_rr) - num_pron_op
+    features["Adverbs Difference"] = float(num_adv_rr) - num_adv_op
+    features["Interjections Difference"] = float(num_intj_rr) - num_adv_op
+    features["Conjunctions Difference"] = float(num_conj_rr) - num_conj_op
+
+def add_entity_parse_features(features, doc):
+    for ent in doc.ents:
+        features["Entity: " + ent.label_] += 1
+
+def add_parse_features(data_point, features, nlp):
+    root_reply = data_point["content"]["comments"][0]["body"]
+    op_text = data_point["op_text"]
+    doc_rr = nlp(root_reply)
+    doc_op = nlp(op_text)
+    #add_pos_count_parse_features(features, doc_rr)
+    add_pos_similarity_parse_features(features, doc_rr, doc_op)
+    #Won't work unless you re-enable the entity tagger in load_data
+    #add_entity_parse_features(features, doc_rr)
 
 
 
-
-def test_phi(data_point):
+def test_phi(data_point, nlp):
     features = Counter()
     comments = data_point["content"]["comments"]
     op_text = data_point["op_text"]
     root_reply_text = comments[0]["body"]
     length = min(4, len(comments))
-    features['len:' + str(length)] += 1.0
-    features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
+    
+    ##### IMPORTANT!!!! Two ## marks means the feature is good and we're using it
+
+    ##features['len:' + str(length)] += 1.0
+    ##features['num words'] += len(data_point["content"]["comments"][0]["body"].split(" "))
     
     # interplay
-    add_words_in_common_features(data_point, features)
+    ##add_words_in_common_features(data_point, features)
 
     # discourse markers
-    add_discourse_markers_features(data_point, features)
+    ##add_discourse_markers_features(data_point, features)
 
     # personal pronouns
     # personal_pronouns_helper(comment=root_reply_text, features, pronouns_list=SECOND_PERSON_PRONOUNS, "2nd_person_root")
-    personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
+    ##personal_pronouns_helper(op_text, features, FIRST_PERSON_PRONOUNS_SNG, "1st_person_sg_op")
     # personal_pronouns_helper(root_reply_text, features, FIRST_PERSON_PRONOUNS_PLR, "1st_person_pl_root")
 
     # positive/negative words
     # positive_words_intersection_features(root_reply_text, features)
     # negative_words_intersection_features(root_reply_text, features)
-
     # formatting
-    add_article_features(data_point, features)
-    add_link_features(data_point, features)
-    add_misc_features(data_point, features)
-    add_markdown_features(data_point, features)
+    ##add_article_features(data_point, features)
+    ##add_link_features(data_point, features)
+    ##add_misc_features(data_point, features)
+    #add_markdown_features(data_point, features)
+    add_parse_features(data_point, features, nlp)
     return features
 
 
