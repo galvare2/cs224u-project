@@ -19,7 +19,7 @@ from features import pair_test_phi
 from op_features import op_test_phi
 
 def main():
-    experiment(phi=op_test_phi)
+    experiment(phi=op_test_phi, task="op")
 
 def fit_maxent_classifier(X, y):    
     mod = LogisticRegression(fit_intercept=True, max_iter=200)
@@ -98,7 +98,7 @@ def experiment(
     
     """
     data_train, data_dev = load_data.load_pair_data()
-    if task == "op":
+    elif task == "op":
         data_train, data_dev = load_data.load_op_data()
 
 
