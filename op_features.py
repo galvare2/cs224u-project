@@ -7,6 +7,12 @@ import spacy
 FIRST_PERSON_PRONOUNS_SNG = ["i", "im", "i'll", "me", "my", "mine"]
 FIRST_PERSON_PRONOUNS_PLR = ["we", "we'll", "ours", "our", "us"]
 
+def add_formatting_features(data_point, features):
+    num_bold = len(re.findall("[^\*]\*\*[^\*]", data_point))
+    features["num bold"] = num_bold
+    num_paragraphs = data_point.count("\n\n")
+    features["num paragraphs"] = num_paragraphs
+
 def add_pronoun_features(data_point, features):
     comment = data_point.lower().split()
     prons_sng = [word for word in comment if word in FIRST_PERSON_PRONOUNS_SNG]
@@ -48,6 +54,7 @@ def negative_words_intersection_features(comment, features):
 def op_test_phi(data_point, nlp):
     features = Counter()
     add_pronoun_features(data_point, features)
+<<<<<<< HEAD
     positive_words_intersection_features(comment, features)
     negative_words_intersection_features(comment, features)
     return features
@@ -60,3 +67,7 @@ def op_test_phi(data_point, nlp):
 
 
 
+=======
+    add_formatting_features(data_point, features)
+    return features
+>>>>>>> origin/master
