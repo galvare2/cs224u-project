@@ -18,6 +18,8 @@ import scipy.stats
 from features import pair_test_phi
 from op_features import op_test_phi
 
+
+# change these constants to switch between pair and op tasks
 PHI = pair_test_phi
 DATA_LOADER = load_data.load_pair_data
 
