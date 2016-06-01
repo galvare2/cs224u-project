@@ -79,13 +79,8 @@ def load_op_data():
 
         # shave the "CMV: " off the title
         title = shave_CMV(title)
-        
-        # the title is basically the first sentence of the body
-        if title[-1] != '.':
-            title = title + '.'
-        body = title + ' ' + body
 
-        data.append((body, data_object["delta_label"]))
+        data.append(((title, body), data_object["delta_label"]))
     num_examples = len(data)
     cutoff = int(num_examples * DEV_CUTOFF_FRACTION)
     data_train = data[:cutoff]
