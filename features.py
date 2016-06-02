@@ -30,6 +30,9 @@ def positive_words_intersection_features(comment, features):
     # featurize the posword count as the value
     features["pos_words"] += posCount
 
+    # fraction of words that are positive
+    features["pos_words_frac"] += posCount / len(comment)
+
     # featurize the posword count as part of the key
     # features["pos_words:", str(posCount)] += 1.0
 
@@ -301,6 +304,7 @@ def pair_test_phi(data_point, nlp):
     # positive/negative words
     # positive_words_intersection_features(root_reply_text, features)
     # negative_words_intersection_features(root_reply_text, features)
+    
     # formatting
     ##add_article_features(data_point, features)
     ##add_link_features(data_point, features)
