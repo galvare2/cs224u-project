@@ -26,8 +26,8 @@ def add_pronoun_features(data_point, features):
 
 POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
 
-def positive_words_intersection_features(data_point, features):
-	comment = data_point.upper().split()
+def positive_words_intersection_features(body, features):
+	comment = body.upper().split()
 	posWords = [word for word in comment if word in POSLIST]
 	posCount = len(posWords)
 
@@ -38,8 +38,8 @@ def positive_words_intersection_features(data_point, features):
 	# features["pos_words:", str(posCount)] += 1.0
 
 
-def negative_words_intersection_features(data_point, features):
-	comment = data_point.upper().split()
+def negative_words_intersection_features(body, features):
+	comment = body.upper().split()
 	negWords = [word for word in comment if word in NEGLIST]
 	negCount = len(negWords)
 
@@ -52,9 +52,10 @@ def negative_words_intersection_features(data_point, features):
 
 
 def op_test_phi(data_point, nlp):
+	title, body = data_point
     features = Counter()
     add_pronoun_features(data_point, features)
-    positive_words_intersection_features(comment, features)
-    negative_words_intersection_features(comment, features)
+    positive_words_intersection_features(body, features)
+    negative_words_intersection_features(body, features)
     add_formatting_features(data_point, features)
     return features
