@@ -20,53 +20,50 @@ import spacy
 """
 
 
-#POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
-
-
-
+# POSLIST, NEGLIST = loadPosNegList("../posnegdata.csv")
 
 def positive_words_intersection_features(comment, features):
-	comment = comment.upper().split()
-	posWords = [word for word in comment if word in POSLIST]
-	posCount = len(posWords)
+    comment = comment.upper().split()
+    pos_intersect = set(POSLIST).intersection(comment)
+    posCount = len(pos_intersect)
 
-	# featurize the posword count as the value
-	features["pos_words"] += posCount
+    # featurize the posword count as the value
+    features["pos_words"] += posCount
 
-	# featurize the pronoun count as part of the key
-	# features["pos_words:", str(posCount)] += 1.0
+    # featurize the posword count as part of the key
+    # features["pos_words:", str(posCount)] += 1.0
 
 
 def negative_words_intersection_features(comment, features):
-	comment = comment.upper().split()
-	negWords = [word for word in comment if word in NEGLIST]
-	negCount = len(negWords)
+    comment = comment.upper().split()
+    neg_intersect = set(NEGLIST).intersection(comment)
+    negCount = len(neg_intersect)
 
-	# featurize the posword count as the value
-	features["neg_words"] += negCount
+    # featurize the negword count as the value
+    features["neg_words"] += negCount
 
-	# featurize the pronoun count as part of the key
-	# features["neg_words:", str(negCount)] += 1.0
+    # featurize the negword count as part of the key
+    # features["neg_words:", str(negCount)] += 1.0
 
 
 
 # dictionary of discourse markers indicative of disagreement
 disagreement_markers = {
-	"really": 67,
-	"no": 66,
-	"actually": 60,
-	"but": 58,
-	"so": 58,
-	"you mean": 57
+    "really": 67,
+    "no": 66,
+    "actually": 60,
+    "but": 58,
+    "so": 58,
+    "you mean": 57
 }
 
 # dictionary of discourse markers indicative of agreement
 agreement_markers = {
-	"yes": 73,
-	"i know": 64,
-	"i believe": 62,
-	"i think": 61,
-	"just": 57
+    "yes": 73,
+    "i know": 64,
+    "i believe": 62,
+    "i think": 61,
+    "just": 57
 }
 
 
